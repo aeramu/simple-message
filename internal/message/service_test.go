@@ -23,8 +23,9 @@ func TestServiceImpl_SendMessage(t *testing.T) {
 		return true
 	})).Return(nil)
 
-	err := service.SendMessage(cmd)
+	message, err := service.SendMessage(cmd)
 	assert.NoError(t, err)
+	assert.NotNil(t, message)
 }
 
 func TestServiceImpl_GetMessages(t *testing.T) {

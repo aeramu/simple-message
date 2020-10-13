@@ -8,7 +8,7 @@ import (
 
 // Service interface for message service
 type Service interface {
-	SendMessage(cmd SendMessage) error
+	SendMessage(cmd SendMessage) (Message, error)
 	GetMessages() ([]Message, error)
 }
 
@@ -25,7 +25,7 @@ type ServiceImpl struct {
 }
 
 // SendMessage send message service
-func (s *ServiceImpl) SendMessage(cmd SendMessage) error {
+func (s *ServiceImpl) SendMessage(cmd SendMessage) (Message, error) {
 	messageID := uuid.New().String()
 	message := Message{
 		ID:   messageID,
@@ -34,10 +34,10 @@ func (s *ServiceImpl) SendMessage(cmd SendMessage) error {
 
 	if err := s.messageRepo.Save(message); err != nil {
 		log.Println(err)
-		return err
+		return Message{}, err
 	}
 
-	return nil
+	return message, nil
 }
 
 // GetMessages get all message service

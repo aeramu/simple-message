@@ -7,6 +7,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
+var messageCh chan message.Message
+
 // NewHandler return handler implementation
 func NewHandler(messageService message.Service) http.Handler {
 	r := mux.NewRouter()
@@ -15,8 +17,14 @@ func NewHandler(messageService message.Service) http.Handler {
 		messageService: messageService,
 	}
 
+	messageCh = make(chan message.Message)
+
+	// start messageCh receiver
+	go broadcaster()
+
 	r.HandleFunc("/messages", messageHandler.getMessages).Methods("GET")
 	r.HandleFunc("/messages", messageHandler.postMessages).Methods("POST")
+	r.HandleFunc("/live", live)
 
 	return r
 }

@@ -54,9 +54,14 @@ func (h messageHandler) postMessages(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// send message to service
-	if err := h.messageService.SendMessage(cmd); err != nil {
+	message, err := h.messageService.SendMessage(cmd)
+	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
+	// send message to bradcast to websocket client
+	messageCh <- message
+
 	w.WriteHeader(http.StatusOK)
 }
